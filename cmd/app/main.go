@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import "github.com/qudecim/password-manager-backend/internal/app"
 
+// Let's go mthfck
 func main() {
-	fmt.Println("Hello, World!")
+
+	app.Run()
+
 }
