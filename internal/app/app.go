@@ -1,7 +1,7 @@
-package main
+package app
 
-import "fmt"
+import "github.com/qudecim/password-manager-backend/internal/transport/rest"
 
-func main() {
-	fmt.Println("Hello, World!")
+func Run() {
+	rest.Run()
 }
