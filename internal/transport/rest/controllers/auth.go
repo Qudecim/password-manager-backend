@@ -1,17 +1,37 @@
 package rest
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
 	service "github.com/qudecim/password-manager-backend/internal/services"
 )
 
+type User struct {
+	id        int
+	Email     string
+	PublicKey string
+}
+
 // Authentification
 // Check param email
 // Return enycription data
 func Auth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	d := service.Auth()
+	var user User
+
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	d, err := service.Auth(user.Email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	out(w, d)
 }
 
@@ -27,6 +47,20 @@ func Authentification(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 // We check params email and public key
 // Return token
 func Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	d := service.Register()
+
+	var user User
+
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	d, err := service.Register(user.Email, user.PublicKey)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	out(w, d)
 }
