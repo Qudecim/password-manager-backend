@@ -6,11 +6,12 @@ import (
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/qudecim/password-manager-backend/internal/enycrypt"
 	"github.com/qudecim/password-manager-backend/internal/models/mysql"
 )
 
 func main() {
-	test2()
+	encrypt()
 }
 
 func test1() {
@@ -53,5 +54,33 @@ func test2() {
 	defer db.Close()
 
 	d := mysql.UserModel{DB: db}
-	fmt.Print(d.Get(1))
+	fmt.Print(d.Get(""))
+}
+
+func encrypt() {
+
+	b := []byte("ABC€")
+
+	pub, pri, err := enycrypt.GenerateKeys(1024)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(pri)
+
+	en, err := enycrypt.EncryptRSA(pub, b)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(2)
+
+	fmt.Println(en)
+
+	den, err := enycrypt.DecryptRSA(pri, en)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(den))
 }

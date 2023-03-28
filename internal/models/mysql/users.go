@@ -18,13 +18,12 @@ func (m *UserModel) Insert(title, content, expires string) (int, error) {
 }
 
 // Get - Метод для возвращения данных заметки по её идентификатору ID.
-func (m *UserModel) Get(id int) (*models.User, error) {
+func (m *UserModel) Get(Email string) (*models.User, error) {
 	var user models.User
-	err := m.DB.QueryRow("select * from Users where id = ?", id).Scan(&user.ID, &user.Email, &user.PublicKey, &user.ConfirmationString)
+	err := m.DB.QueryRow("select * from Users where Email = ?", Email).Scan(&user.ID, &user.Email, &user.PublicKey, &user.ConfirmationString)
 	if err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
 
@@ -49,7 +48,7 @@ func (m *UserModel) Add(Email string, PublicKey string) (bool, error) {
 
 // Set Confiramtion String don't encoded
 func (m *UserModel) SetConfiramtionString(Email string, ConfirmationString string) (bool, error) {
-	_, err := m.DB.ExecContext(context.Background(), "UPDATE Users SET ConfirmationString = ? WHERE Email = ?", Email, ConfirmationString)
+	_, err := m.DB.Exec("UPDATE Users SET ConfirmationString = ? WHERE Email = ?", ConfirmationString, Email)
 	return true, err
 }
 

@@ -2,26 +2,52 @@ package service
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/qudecim/password-manager-backend/internal/enycrypt"
 	"github.com/qudecim/password-manager-backend/internal/models/mysql"
 )
 
+type ConfirmationStringResponse struct {
+	ConfirmationString []byte
+}
+
 // It enycrypt some data and return
-func Auth(email string) (string, error) {
+func Auth(email string) (*ConfirmationStringResponse, error) {
+
+	var resp ConfirmationStringResponse
 
 	userModel := mysql.UserModel{DB: DB}
 
 	hasUser, err := userModel.Has(email)
-	if hasUser {
+	if !hasUser {
 		var err error
-		return "", err
+		return nil, err
 	}
 
 	ConfiramtionString := enycrypt.RandStringRunes(12)
-	userModel.SetConfiramtionString(email, ConfiramtionString)
+	_, err = userModel.SetConfiramtionString(email, ConfiramtionString)
+	if err != nil {
+		fmt.Println("Don't write cofirmation string")
+	}
 
-	return "nil", err
+	user, _ := userModel.Get(email)
+
+	n := new(big.Int)
+	nd, _ := n.SetString(user.PublicKey, 10)
+
+	var publicKey enycrypt.PublicKey
+	publicKey.E = big.NewInt(65537)
+	publicKey.N = nd
+
+	en, err := enycrypt.EncryptRSA(&publicKey, []byte(ConfiramtionString))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	resp.ConfirmationString = en
+
+	return &resp, err
 }
 
 // Get email and deenycrypt data
@@ -29,6 +55,24 @@ func Auth(email string) (string, error) {
 func Authentification() [6]int {
 	primes := [6]int{2, 3, 5, 7, 11, 13}
 	return primes
+}
+
+func Gen(email string) (*enycrypt.PublicKey, error) {
+
+	userModel := mysql.UserModel{DB: DB}
+
+	hasUser, err := userModel.Has(email)
+	if !hasUser {
+		var err error
+		return nil, err
+	}
+
+	ConfiramtionString := enycrypt.RandStringRunes(12)
+	userModel.SetConfiramtionString(email, ConfiramtionString)
+
+	pub, _, _ := enycrypt.GenerateKeys(1024)
+
+	return pub, err
 }
 
 // It write email and public method in DB
