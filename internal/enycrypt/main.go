@@ -3,6 +3,7 @@ package enycrypt
 import (
 	"bytes"
 	"crypto/rand"
+	"crypto/sha512"
 	"fmt"
 	"math/big"
 	mathrand "math/rand"
@@ -78,6 +79,54 @@ func GenerateKeys(bitlen int) (*PublicKey, *PrivateKey, error) {
 		priv := &PrivateKey{N: n, D: d}
 		return pub, priv, nil
 	}
+}
+
+func GenerateByPassword(str string) (*PublicKey, *PrivateKey, error) {
+
+	h := sha512.New()
+	h.Write([]byte(str))
+	bs := h.Sum(nil)
+
+	s1, s2 := SplitBytes(bs)
+
+	n1 := new(big.Int)
+	p := n1.SetBytes(s1)
+
+	n2 := new(big.Int)
+	q := n2.SetBytes(s2)
+
+	// n is pq
+	n := new(big.Int).Set(p)
+	n.Mul(n, q)
+
+	// theta(n) = (p-1)(q-1)
+	p.Sub(p, big.NewInt(1))
+	q.Sub(q, big.NewInt(1))
+	totient := new(big.Int).Set(p)
+	totient.Mul(totient, q)
+
+	// e as recommended by PKCS#1 (RFC 2313)
+	e := big.NewInt(65537)
+
+	// Calculate the modular multiplicative inverse of e such that:
+	//   de = 1 (mod totient)
+	// If gcd(e, totient)=1, then e is guaranteed to have a unique inverse, but
+	// since p-1 or q-1 could theoretically have e as a factor, this may fail
+	// once in a while (likely to be exceedingly rare).
+	d := new(big.Int).ModInverse(e, totient)
+
+	pub := &PublicKey{N: n, E: e}
+	priv := &PrivateKey{N: n, D: d}
+	return pub, priv, nil
+}
+
+func SplitBytes(input []byte) (firstHalf, secondHalf []byte) {
+	halfLength := len(input) / 2
+	firstHalf = make([]byte, halfLength)
+	secondHalf = make([]byte, len(input)-halfLength)
+	copy(firstHalf, input[:halfLength])
+	copy(secondHalf, input[halfLength:])
+	return firstHalf, secondHalf
 }
 
 type PublicKey struct {
