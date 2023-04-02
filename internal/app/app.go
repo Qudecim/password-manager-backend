@@ -1,7 +1,17 @@
 package app
 
-import "github.com/qudecim/password-manager-backend/internal/transport/rest"
+import "database/sql"
 
-func Run() {
-	rest.Run()
+var Config *ApplicationConfig
+var DB *sql.DB
+
+type ApplicationConfig struct {
+	Debug bool
+}
+
+func New(database *sql.DB) {
+	config := ApplicationConfig{true}
+	Config = &config
+
+	DB = database
 }

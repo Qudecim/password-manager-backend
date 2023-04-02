@@ -17,7 +17,7 @@ func Auth(email string) (*ConfirmationStringResponse, error) {
 
 	var resp ConfirmationStringResponse
 
-	userModel := mysql.UserModel{DB: DB}
+	userModel := mysql.UserModel{}
 
 	hasUser, err := userModel.Has(email)
 	if !hasUser {
@@ -59,7 +59,7 @@ func Authentification() [6]int {
 
 func Gen(email string) (*enycrypt.PublicKey, error) {
 
-	userModel := mysql.UserModel{DB: DB}
+	userModel := mysql.UserModel{}
 
 	hasUser, err := userModel.Has(email)
 	if !hasUser {
@@ -79,7 +79,7 @@ func Gen(email string) (*enycrypt.PublicKey, error) {
 // after that it is creating token
 func Register(email string, publicKey string) (bool, error) {
 
-	userModel := mysql.UserModel{DB: DB}
+	userModel := mysql.UserModel{}
 
 	fmt.Println(email)
 

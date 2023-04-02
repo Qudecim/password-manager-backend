@@ -38,7 +38,7 @@ func Auth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 // Authentification
 // Get email and denycrypt data
 // Return token
-func Authentification(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func AuthConfirm(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	d := service.Authentification()
 	out(w, d)
 }

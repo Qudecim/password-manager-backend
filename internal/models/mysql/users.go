@@ -2,14 +2,12 @@ package mysql
 
 import (
 	"context"
-	"database/sql"
 
+	"github.com/qudecim/password-manager-backend/internal/app"
 	"github.com/qudecim/password-manager-backend/internal/models"
 )
 
-// SnippetModel - Определяем тип который обертывает пул подключения sql.DB
 type UserModel struct {
-	DB *sql.DB
 }
 
 // Insert - Метод для создания новой заметки в базе дынных.
@@ -20,7 +18,7 @@ func (m *UserModel) Insert(title, content, expires string) (int, error) {
 // Get - Метод для возвращения данных заметки по её идентификатору ID.
 func (m *UserModel) Get(Email string) (*models.User, error) {
 	var user models.User
-	err := m.DB.QueryRow("select * from Users where Email = ?", Email).Scan(&user.ID, &user.Email, &user.PublicKey, &user.ConfirmationString)
+	err := app.DB.QueryRow("select * from Users where Email = ?", Email).Scan(&user.ID, &user.Email, &user.PublicKey, &user.ConfirmationString)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +27,7 @@ func (m *UserModel) Get(Email string) (*models.User, error) {
 
 // Is exsist user
 func (m *UserModel) Has(Email string) (bool, error) {
-	rows, err := m.DB.Query("select * from Users where Email = ?", Email)
+	rows, err := app.DB.Query("select * from Users where Email = ?", Email)
 	if err != nil {
 		return false, err
 	}
@@ -42,13 +40,13 @@ func (m *UserModel) Has(Email string) (bool, error) {
 
 // Add user
 func (m *UserModel) Add(Email string, PublicKey string) (bool, error) {
-	_, err := m.DB.ExecContext(context.Background(), "INSERT INTO Users (Email, PublicKey) VALUES (?,?)", Email, PublicKey)
+	_, err := app.DB.ExecContext(context.Background(), "INSERT INTO Users (Email, PublicKey) VALUES (?,?)", Email, PublicKey)
 	return true, err
 }
 
 // Set Confiramtion String don't encoded
 func (m *UserModel) SetConfiramtionString(Email string, ConfirmationString string) (bool, error) {
-	_, err := m.DB.Exec("UPDATE Users SET ConfirmationString = ? WHERE Email = ?", ConfirmationString, Email)
+	_, err := app.DB.Exec("UPDATE Users SET ConfirmationString = ? WHERE Email = ?", ConfirmationString, Email)
 	return true, err
 }
 

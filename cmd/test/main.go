@@ -56,7 +56,7 @@ func test2() {
 	}
 	defer db.Close()
 
-	d := mysql.UserModel{DB: db}
+	d := mysql.UserModel{}
 	fmt.Print(d.Get(""))
 }
 
