@@ -5,58 +5,71 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/qudecim/password-manager-backend/internal/models"
+	"github.com/qudecim/password-manager-backend/internal/models/mysql"
 	service "github.com/qudecim/password-manager-backend/internal/services"
 )
 
-type User struct {
-	id        int
-	Email     string
-	PublicKey string
-}
-
 // Authentification
-// Check param email
-// Return enycription data
 func Auth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	var user User
 
+	var user models.User
+
+	// Получаем user из json
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	d, err := service.Auth(user.Email)
+	// Проверяем существование
+	hasUser, err := mysql.UserHas(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if !hasUser {
+		http.Error(w, "This email is not using", http.StatusBadRequest)
+		return
+	}
+
+	// Аутентификация
+	err = service.Auth(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	out(w, d)
-}
+	token, err := service.CreateToken(&user)
 
-// Authentification
-// Get email and denycrypt data
-// Return token
-func AuthConfirm(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	d := service.Authentification()
 	out(w, d)
 }
 
 // Registration
-// We check params email and public key
-// Return token
 func Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
-	var user User
+	var user models.User
 
+	// Получаем user из json
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	d, err := service.Register(user.Email, user.PublicKey)
+	// Проверяем существование
+	hasUser, err := mysql.UserHas(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if hasUser {
+		http.Error(w, "This email is using", http.StatusBadRequest)
+		return
+	}
+
+	// Добавлени пользователя
+	d, err := service.Register(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
