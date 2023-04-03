@@ -32,9 +32,9 @@ func UserHas(user *models.User) (bool, error) {
 	}
 }
 
-func UserAdd(user *models.User) (bool, error) {
+func UserAdd(user *models.User) error {
 	_, err := app.DB.ExecContext(context.Background(), "INSERT INTO Users (Email, Password) VALUES (?,?)", user.Email, user.Password)
-	return true, err
+	return err
 }
 
 func UserAuth(user *models.User) (int, error) {
@@ -51,4 +51,8 @@ func UserAuth(user *models.User) (int, error) {
 	}
 
 	return id, nil
+}
+
+func TokenAdd(user *models.User, token string) error {
+
 }

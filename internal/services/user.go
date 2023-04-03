@@ -1,6 +1,9 @@
 package service
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+
 	"github.com/qudecim/password-manager-backend/internal/models"
 	"github.com/qudecim/password-manager-backend/internal/models/mysql"
 )
@@ -17,11 +20,11 @@ func Auth(user *models.User) error {
 	return err
 }
 
-func Register(user *models.User) (bool, error) {
+func Register(user *models.User) error {
 
-	success, err := mysql.UserAdd(user)
+	err := mysql.UserAdd(user)
 
-	return success, err
+	return err
 }
 
 func checkToken() {
@@ -30,4 +33,14 @@ func checkToken() {
 
 func CreateToken(user *models.User) (string, error) {
 
+	return generateSecureToken(128), nil
+
+}
+
+func generateSecureToken(length int) string {
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(b)
 }

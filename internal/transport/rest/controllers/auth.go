@@ -40,9 +40,10 @@ func Auth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
+	// Создание токена
 	token, err := service.CreateToken(&user)
 
-	out(w, d)
+	out(w, token)
 }
 
 // Registration
@@ -69,11 +70,11 @@ func Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	// Добавлени пользователя
-	d, err := service.Register(&user)
+	err = service.Register(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	out(w, d)
+	out(w, true)
 }
