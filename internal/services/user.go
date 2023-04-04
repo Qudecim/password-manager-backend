@@ -33,7 +33,11 @@ func checkToken() {
 
 func CreateToken(user *models.User) (string, error) {
 
-	return generateSecureToken(128), nil
+	token := generateSecureToken(128)
+
+	err := mysql.TokenAdd(user, token)
+
+	return token, err
 
 }
 
