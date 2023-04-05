@@ -1,8 +1,12 @@
 package service
 
 import (
-	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
+	match_rand "math/rand"
+	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/qudecim/password-manager-backend/internal/models"
 	"github.com/qudecim/password-manager-backend/internal/models/mysql"
@@ -33,18 +37,42 @@ func checkToken() {
 
 func CreateToken(user *models.User) (string, error) {
 
-	token := generateSecureToken(128)
+	// Рандомное число
+	rand_int := match_rand.Int()
 
-	err := mysql.TokenAdd(user, token)
+	// Строка токена
+	token := strconv.Itoa(user.ID) + "|" + strconv.Itoa(rand_int)
+
+	// sha128
+	a := sha256.New()
+	a.Write([]byte(token))
+	hash := hex.EncodeToString(a.Sum(nil))
+
+	err := mysql.TokenAdd(user, hash)
 
 	return token, err
 
 }
 
-func generateSecureToken(length int) string {
-	b := make([]byte, length)
-	if _, err := rand.Read(b); err != nil {
-		return ""
+func IsAuth(r *http.Request) bool {
+
+	// Вытаскиваем токен
+	reqToken := r.Header.Get("Authorization")
+
+	if reqToken == "" {
+		return false
 	}
-	return hex.EncodeToString(b)
+
+	splitToken := strings.Split(reqToken, "Bearer ")
+	reqToken = splitToken[1]
+
+	// Хешируем
+	a := sha256.New()
+	a.Write([]byte(reqToken))
+	hash := hex.EncodeToString(a.Sum(nil))
+
+	// Чекаем
+	hasToken, _ := mysql.TokenHas(hash)
+
+	return hasToken
 }

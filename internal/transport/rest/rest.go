@@ -15,7 +15,6 @@ func Run() {
 	router := httprouter.New()
 
 	router.POST("/auth/", rest.Auth)
-	router.POST("/auth_confirm/", rest.AuthConfirm)
 	router.POST("/register/", rest.Register)
 
 	router.GET("/device", rest.Auth)

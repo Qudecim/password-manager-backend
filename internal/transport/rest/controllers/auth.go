@@ -12,11 +12,17 @@ import (
 )
 
 type authResponse struct {
-	token string
+	Token string
 }
 
 // Authentification
 func Auth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	if service.IsAuth(r) {
+		err := errors.New("Authentificated")
+		out(w, false, nil, err)
+		return
+	}
 
 	var user models.User
 
@@ -57,6 +63,12 @@ func Auth(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 // Registration
 func Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
+	if service.IsAuth(r) {
+		err := errors.New("Authentificated")
+		out(w, false, nil, err)
+		return
+	}
+
 	var user models.User
 
 	// Получаем user из json
@@ -73,6 +85,7 @@ func Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	if hasUser {
+		err := errors.New("User exist")
 		out(w, false, nil, err)
 		return
 	}

@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/qudecim/password-manager-backend/internal/app"
@@ -33,6 +34,18 @@ func UserHas(user *models.User) (bool, error) {
 	}
 }
 
+func TokenHas(token string) (bool, error) {
+	rows, err := app.DB.Query("select * from Tokens where token = ?", token)
+	if err != nil {
+		return false, err
+	}
+	if rows.Next() {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func UserAdd(user *models.User) error {
 	_, err := app.DB.ExecContext(context.Background(), "INSERT INTO Users (email, password) VALUES (?,?)", user.Email, user.Password)
 	return err
@@ -41,13 +54,9 @@ func UserAdd(user *models.User) error {
 func UserAuth(user *models.User) (int, error) {
 	var id int
 
-	err := app.DB.QueryRow("select ID from Users where email = ? and password = ?", user.Email, user.Password).Scan(id)
+	err := app.DB.QueryRow("select id from Users where email = ? and password = ?", user.Email, user.Password).Scan(&id)
 	if err != nil {
-		return 0, err
-	}
-	if id == 0 {
-		var err error
-		err.Error()
+		err := errors.New("Password incorrect")
 		return 0, err
 	}
 
