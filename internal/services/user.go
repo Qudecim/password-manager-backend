@@ -3,6 +3,7 @@ package service
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	match_rand "math/rand"
 	"net/http"
 	"strconv"
@@ -56,11 +57,37 @@ func CreateToken(user *models.User) (string, error) {
 
 func IsAuth(r *http.Request) bool {
 
-	// Вытаскиваем токен
+	token, err := getToken(r)
+	if err != nil {
+		return false
+	}
+
+	// Чекаем
+	hasToken, _ := mysql.TokenHas(token)
+
+	return hasToken
+}
+
+func GetUser(r *http.Request) (*models.User, error) {
+
+	token, err := getToken(r)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := mysql.GetByToken(token)
+
+	return user, err
+
+}
+
+func getToken(r *http.Request) (string, error) {
+
 	reqToken := r.Header.Get("Authorization")
 
 	if reqToken == "" {
-		return false
+		err := errors.New("Token didn't find")
+		return "", err
 	}
 
 	splitToken := strings.Split(reqToken, "Bearer ")
@@ -71,8 +98,6 @@ func IsAuth(r *http.Request) bool {
 	a.Write([]byte(reqToken))
 	hash := hex.EncodeToString(a.Sum(nil))
 
-	// Чекаем
-	hasToken, _ := mysql.TokenHas(hash)
+	return hash, nil
 
-	return hasToken
 }

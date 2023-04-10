@@ -22,6 +22,15 @@ func Get(Email string) (*models.User, error) {
 	return &user, nil
 }
 
+func GetByToken(Token string) (*models.User, error) {
+	var user models.User
+	err := app.DB.QueryRow("select u.id, u.email from Tokens as t LEFT JOIN Users as u ON t.user_id = u.id where t.token = ?", Token).Scan(&user.ID, &user.Email, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 func UserHas(user *models.User) (bool, error) {
 	rows, err := app.DB.Query("select * from Users where email = ?", user.Email)
 	if err != nil {

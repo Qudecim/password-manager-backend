@@ -17,6 +17,8 @@ func Run() {
 	router.POST("/auth/", rest.Auth)
 	router.POST("/register/", rest.Register)
 
+	router.GET("/data/", rest.DataGet)
+
 	router.GET("/device", rest.Auth)
 	router.POST("/device", rest.Auth)
 	router.DELETE("/device/:id", rest.Auth)
