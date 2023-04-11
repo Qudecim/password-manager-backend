@@ -9,10 +9,6 @@ import (
 	"github.com/qudecim/password-manager-backend/internal/models"
 )
 
-func Insert(title, content, expires string) (int, error) {
-	return 0, nil
-}
-
 func Get(Email string) (*models.User, error) {
 	var user models.User
 	err := app.DB.QueryRow("select * from users where email = ?", Email).Scan(&user.ID, &user.Email, &user.Password)

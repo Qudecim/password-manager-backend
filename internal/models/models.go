@@ -11,3 +11,9 @@ type User struct {
 	Email    string
 	Password string
 }
+
+type Data struct {
+	ID     int
+	UserId int
+	Data   string
+}

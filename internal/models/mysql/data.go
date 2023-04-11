@@ -7,15 +7,27 @@ import (
 	"github.com/qudecim/password-manager-backend/internal/models"
 )
 
-func DataAdd(user *models.User, data string) error {
-	_, err := app.DB.ExecContext(context.Background(), "INSERT INTO Data (user_id, data) VALUES (?,?)", user.ID, data)
+func DataAdd(data models.Data) error {
+	_, err := app.DB.ExecContext(context.Background(), "INSERT INTO Data (user_id, data) VALUES (?,?)", data.UserId, data.Data)
 	return err
 }
 
-func DataGet(user *models.User) error {
-	err := app.DB.QueryRow("select * from Data where user_id = ?", Email).Scan(&user.ID, &user.Email, &user.Password)
+func DataGet(user *models.User) ([]models.Data, error) {
+
+	var dataSlice []models.Data
+
+	rows, err := app.DB.Query("select id, data from Data where user_id = ?", user.ID)
 	if err != nil {
-		return nil, err
+		return dataSlice, err
 	}
-	return &user, nil
+
+	for rows.Next() {
+		var data models.Data
+		if err := rows.Scan(&data.ID, &data.Data); err != nil {
+			return dataSlice, err
+		}
+		dataSlice = append(dataSlice, data)
+	}
+
+	return dataSlice, nil
 }
