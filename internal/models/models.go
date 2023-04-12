@@ -17,3 +17,11 @@ type Data struct {
 	UserId int
 	Data   string
 }
+
+type Device struct {
+	ID        int
+	UserId    int
+	Name      string
+	Uuid      string
+	PublicKey string
+}
