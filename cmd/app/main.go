@@ -1,26 +1,35 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 
-	"github.com/qudecim/password-manager-backend/internal/transport/rest"
+	"github.com/gin-gonic/gin"
+	"github.com/qudecim/password-manager-backend/pkg/repository"
+	"github.com/qudecim/password-manager-backend/pkg/service"
+	"github.com/qudecim/password-manager-backend/pkg/transport"
+	"github.com/qudecim/password-manager-backend/pkg/transport/rest"
+	"github.com/qudecim/password-manager-backend/pkg/transport/socket"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/qudecim/password-manager-backend/internal/app"
 )
 
 // Let's go mthfck
 func main() {
 
-	db, err := sql.Open("mysql",
-		"main:main@tcp(127.0.0.1:3306)/main")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	repos := repository.NewRepository()
+	services := service.NewService(repos)
 
-	app.New(db)
-	rest.Run()
+	router := gin.New()
+
+	restHandler := rest.NewHandler(services)
+	router = restHandler.InitRoutes(router)
+
+	socketHandler := socket.NewHandler(services)
+	router = socketHandler.InitRoutes(router)
+
+	srv := new(transport.Server)
+	if err := srv.Run("8080", router); err != nil {
+		log.Fatalf("error occured while running http server: %s", err.Error())
+	}
 
 }
