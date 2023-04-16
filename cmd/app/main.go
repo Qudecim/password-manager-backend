@@ -9,6 +9,7 @@ import (
 	"github.com/qudecim/password-manager-backend/pkg/transport"
 	"github.com/qudecim/password-manager-backend/pkg/transport/rest"
 	"github.com/qudecim/password-manager-backend/pkg/transport/socket"
+	"github.com/spf13/viper"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -16,7 +17,23 @@ import (
 // Let's go mthfck
 func main() {
 
-	repos := repository.NewRepository()
+	if err := initConfig(); err != nil {
+		log.Fatalf("error initializing configs: %s", err.Error())
+	}
+
+	db, err := repository.NewMysqlDB(repository.Config{
+		Host:     "localhost",
+		Port:     "3306",
+		Username: "main",
+		Password: "main",
+		DBname:   "main",
+		SSLMode:  "disable",
+	})
+	if err != nil {
+		log.Fatalf("failed to initialize db: %s", err.Error())
+	}
+
+	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 
 	router := gin.New()
@@ -28,8 +45,14 @@ func main() {
 	router = socketHandler.InitRoutes(router)
 
 	srv := new(transport.Server)
-	if err := srv.Run("8080", router); err != nil {
+	if err := srv.Run(viper.GetString("port"), router); err != nil {
 		log.Fatalf("error occured while running http server: %s", err.Error())
 	}
 
+}
+
+func initConfig() error {
+	viper.AddConfigPath("configs")
+	viper.SetConfigName("config")
+	return viper.ReadInConfig()
 }
