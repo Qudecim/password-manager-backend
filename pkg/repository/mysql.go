@@ -6,6 +6,10 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const (
+	usersTable = "users"
+)
+
 type Config struct {
 	Host     string
 	Port     string
@@ -16,8 +20,8 @@ type Config struct {
 }
 
 func NewMysqlDB(cfg Config) (*sqlx.DB, error) {
-	db, err := sqlx.Open("mysql", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.Username, cfg.DBname, cfg.Password, cfg.SSLMode))
+	db, err := sqlx.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBname))
 	if err != nil {
 		return nil, err
 	}

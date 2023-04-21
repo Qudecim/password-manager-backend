@@ -1,14 +1,13 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/qudecim/password-manager-backend/pkg/repository"
 	"github.com/qudecim/password-manager-backend/pkg/service"
 	"github.com/qudecim/password-manager-backend/pkg/transport"
 	"github.com/qudecim/password-manager-backend/pkg/transport/rest"
 	"github.com/qudecim/password-manager-backend/pkg/transport/socket"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,8 +16,10 @@ import (
 // Let's go mthfck
 func main() {
 
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	if err := initConfig(); err != nil {
-		log.Fatalf("error initializing configs: %s", err.Error())
+		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
 
 	db, err := repository.NewMysqlDB(repository.Config{
@@ -30,7 +31,7 @@ func main() {
 		SSLMode:  "disable",
 	})
 	if err != nil {
-		log.Fatalf("failed to initialize db: %s", err.Error())
+		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
 	repos := repository.NewRepository(db)
@@ -46,7 +47,7 @@ func main() {
 
 	srv := new(transport.Server)
 	if err := srv.Run(viper.GetString("port"), router); err != nil {
-		log.Fatalf("error occured while running http server: %s", err.Error())
+		logrus.Fatalf("error occured while running http server: %s", err.Error())
 	}
 
 }

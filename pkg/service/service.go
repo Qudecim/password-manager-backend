@@ -1,8 +1,12 @@
 package service
 
-import "github.com/qudecim/password-manager-backend/pkg/repository"
+import (
+	"github.com/qudecim/password-manager-backend/pkg/models"
+	"github.com/qudecim/password-manager-backend/pkg/repository"
+)
 
 type Authorization interface {
+	CreateUser(user models.User) (int64, error)
 }
 
 type Secret interface {
@@ -14,5 +18,7 @@ type Service struct {
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Authorization: NewAuthService(repos.Authorization),
+	}
 }
