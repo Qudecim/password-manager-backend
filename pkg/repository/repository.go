@@ -7,6 +7,7 @@ import (
 
 type Authorization interface {
 	CreateUser(user models.User) (int64, error)
+	GetUser(user models.User) (models.User, error)
 }
 
 type Secret interface {

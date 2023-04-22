@@ -21,6 +21,11 @@ func (h *Handler) InitRoutes(router *gin.Engine) *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
+	auth = router.Group("/secret", h.userIdentity)
+	{
+		auth.POST("/", h.createSecret)
+	}
+
 	return router
 
 }
