@@ -39,7 +39,7 @@ func (s *AuthService) GenerateToken(user models.User) (string, error) {
 
 	user.Password = s.hash(user.Password)
 
-	user, err := s.repo.GetUser(user)
+	user, err := s.repo.GetUserByIdAndPassword(user)
 	if err != nil {
 		return "", err
 	}

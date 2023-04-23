@@ -28,7 +28,7 @@ func (r *AuthRepository) CreateUser(user models.User) (int64, error) {
 	return id, nil
 }
 
-func (r *AuthRepository) GetUser(user models.User) (models.User, error) {
+func (r *AuthRepository) GetUserByIdAndPassword(user models.User) (models.User, error) {
 
 	row := r.db.QueryRow("SELECT id FROM users WHERE email=? AND password=?", user.Email, user.Password)
 	err := row.Scan(&user.Id)

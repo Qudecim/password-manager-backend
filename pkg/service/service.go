@@ -12,6 +12,11 @@ type Authorization interface {
 }
 
 type Secret interface {
+	GetAllSecrets(user_id int) ([]models.Secret, error)
+	GetOneSecret(user_id int, secret_id int) (models.Secret, error)
+	CreateSecret(user_id int, secret models.Secret) (models.Secret, error)
+	UpdateSecret(user_id int, secret models.Secret) (models.Secret, error)
+	DeleteSecret(user_id int, secret_id int) error
 }
 
 type Service struct {
@@ -22,5 +27,6 @@ type Service struct {
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		Secret:        NewSecretService(repos.Secret),
 	}
 }

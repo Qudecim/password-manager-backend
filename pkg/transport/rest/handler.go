@@ -21,9 +21,14 @@ func (h *Handler) InitRoutes(router *gin.Engine) *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
+	// TODO нужен мидлвар проверяющий пренадлежность секретов к пользователю
 	auth = router.Group("/secret", h.userIdentity)
 	{
+		auth.GET("/", h.getSecrets)
+		auth.GET("/:id", h.getOneSecret)
 		auth.POST("/", h.createSecret)
+		auth.PUT("/:id", h.updateSecret)
+		auth.DELETE("/:id", h.deleteSecret)
 	}
 
 	return router

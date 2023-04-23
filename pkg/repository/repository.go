@@ -7,10 +7,11 @@ import (
 
 type Authorization interface {
 	CreateUser(user models.User) (int64, error)
-	GetUser(user models.User) (models.User, error)
+	GetUserByIdAndPassword(user models.User) (models.User, error)
 }
 
 type Secret interface {
+	GetSecrets(user_id int) ([]models.Secret, error)
 }
 
 type Repository struct {
@@ -21,5 +22,6 @@ type Repository struct {
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthRepository(db),
+		Secret:        NewSecretRepository(db),
 	}
 }
