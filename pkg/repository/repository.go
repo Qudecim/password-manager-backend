@@ -6,12 +6,16 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user models.User) (int64, error)
+	CreateUser(user models.User) (int, error)
 	GetUserByIdAndPassword(user models.User) (models.User, error)
 }
 
 type Secret interface {
 	GetSecrets(user_id int) ([]models.Secret, error)
+	GetSecret(user_id int, secret_id int) (models.Secret, error)
+	CreateSecret(user_id int, secret models.Secret) (int, error)
+	UpdateSecret(user_id int, secret models.Secret) error
+	DeleteSecret(user_id int, secret_id int) error
 }
 
 type Repository struct {

@@ -13,23 +13,22 @@ func NewSecretService(repo repository.Secret) *SecretService {
 	return &SecretService{repo: repo}
 }
 
-func (s *SecretService) GetAllSecrets(user_id int) ([]models.Secret, error) {
+func (s *SecretService) GetSecrets(user_id int) ([]models.Secret, error) {
 	return s.repo.GetSecrets(user_id)
 }
 
-func (s *SecretService) GetOneSecret(user_id int, secret_id int) (models.Secret, error) {
-
+func (s *SecretService) GetSecret(user_id int, secret_id int) (models.Secret, error) {
+	return s.repo.GetSecret(user_id, secret_id)
 }
 
-func (s *SecretService) CreateSecret(user_id int, secret models.Secret) (models.Secret, error) {
-
+func (s *SecretService) CreateSecret(user_id int, secret models.Secret) (int, error) {
+	return s.repo.CreateSecret(user_id, secret)
 }
 
-func (s *SecretService) UpdateSecret(user_id int, secret models.Secret) (models.Secret, error) {
-
+func (s *SecretService) UpdateSecret(user_id int, secret models.Secret) error {
+	return s.repo.UpdateSecret(user_id, secret)
 }
 
 func (s *SecretService) DeleteSecret(user_id int, secret_id int) error {
-
-	return nil
+	return s.repo.DeleteSecret(user_id, secret_id)
 }

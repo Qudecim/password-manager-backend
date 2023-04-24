@@ -13,7 +13,7 @@ func NewAuthRepository(db *sqlx.DB) *AuthRepository {
 	return &AuthRepository{db: db}
 }
 
-func (r *AuthRepository) CreateUser(user models.User) (int64, error) {
+func (r *AuthRepository) CreateUser(user models.User) (int, error) {
 
 	result, err := r.db.NamedExec("INSERT INTO users (email, password) values (:email, :password)", user)
 	if err != nil {
@@ -25,7 +25,7 @@ func (r *AuthRepository) CreateUser(user models.User) (int64, error) {
 		return 0, err
 	}
 
-	return id, nil
+	return int(id), nil
 }
 
 func (r *AuthRepository) GetUserByIdAndPassword(user models.User) (models.User, error) {

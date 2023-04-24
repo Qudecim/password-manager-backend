@@ -30,7 +30,7 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user models.User) (int64, error) {
+func (s *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = s.hash(user.Password)
 	return s.repo.CreateUser(user)
 }

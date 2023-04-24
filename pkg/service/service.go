@@ -6,16 +6,16 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user models.User) (int64, error)
+	CreateUser(user models.User) (int, error)
 	GenerateToken(user models.User) (string, error)
 	ParseToken(token string) (int, error)
 }
 
 type Secret interface {
-	GetAllSecrets(user_id int) ([]models.Secret, error)
-	GetOneSecret(user_id int, secret_id int) (models.Secret, error)
-	CreateSecret(user_id int, secret models.Secret) (models.Secret, error)
-	UpdateSecret(user_id int, secret models.Secret) (models.Secret, error)
+	GetSecrets(user_id int) ([]models.Secret, error)
+	GetSecret(user_id int, secret_id int) (models.Secret, error)
+	CreateSecret(user_id int, secret models.Secret) (int, error)
+	UpdateSecret(user_id int, secret models.Secret) error
 	DeleteSecret(user_id int, secret_id int) error
 }
 
