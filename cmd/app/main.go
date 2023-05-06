@@ -25,9 +25,9 @@ func main() {
 	db, err := repository.NewMysqlDB(repository.Config{
 		Host:     "localhost",
 		Port:     "3306",
-		Username: "main",
-		Password: "main",
-		DBname:   "main",
+		Username: "pm_user",
+		Password: "123ZXCzxc",
+		DBname:   "pm",
 		SSLMode:  "disable",
 	})
 	if err != nil {
@@ -53,7 +53,7 @@ func main() {
 }
 
 func initConfig() error {
-	viper.AddConfigPath("../../configs")
+	viper.AddConfigPath("/home/pm/configs")
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()
 }

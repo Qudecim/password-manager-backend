@@ -18,14 +18,28 @@ type Secret interface {
 	DeleteSecret(user_id int, secret_id int) error
 }
 
+type UserDevice interface {
+	Get(user_id int) ([]models.Device, error)
+	Add(user_id int, secret models.Device) error
+	Delete(user_id int, device_id int) error
+}
+
+type Device interface {
+	GetByUid(device_key string) (models.Device, error)
+}
+
 type Repository struct {
 	Authorization
 	Secret
+	UserDevice
+	Device
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthRepository(db),
 		Secret:        NewSecretRepository(db),
+		UserDevice:    NewUserDeviceRepository(db),
+		Device:        NewDeviceRepository(db),
 	}
 }

@@ -12,7 +12,7 @@ CREATE TABLE secrets
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    enycryption TEXT NOT NULL,
+    `encryption` TEXT NOT NULL,
     CONSTRAINT secrets_user_fk
     FOREIGN KEY (user_id) REFERENCES users (id)
 )
@@ -23,12 +23,22 @@ COLLATE=utf8mb4_general_ci;
 CREATE TABLE devices
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
     `name` VARCHAR(255) NOT NULL,
-    uuid VARCHAR(255) NOT NULL,
+    `uid` VARCHAR(255) NOT NULL UNIQUE,
     public_key VARCHAR(255) NOT NULL,
-    CONSTRAINT devices_user_fk
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE user_device
+(
+    user_id INT NOT NULL,
+    device_id INT NOT NULL,
+    CONSTRAINT userdevice_user_fk
     FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT userdevice_device_fk
+    FOREIGN KEY (device_id) REFERENCES device (id)
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
