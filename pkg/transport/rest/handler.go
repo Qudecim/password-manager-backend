@@ -30,6 +30,13 @@ func (h *Handler) InitRoutes(router *gin.Engine) *gin.Engine {
 		auth.DELETE("/:id", h.deleteSecret)
 	}
 
+	auth = router.Group("/device", h.userIdentity)
+	{
+		auth.GET("/", h.getDevices)
+		auth.POST("/", h.addDevice)
+		auth.DELETE("/:id", h.deleteDevice)
+	}
+
 	return router
 
 }
