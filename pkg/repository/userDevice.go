@@ -14,9 +14,12 @@ func NewUserDeviceRepository(db *sqlx.DB) *UserDeviceRepository {
 }
 
 func (r *UserDeviceRepository) Get(user_id int) ([]models.Device, error) {
-	var devices []models.Device
+	devices := make([]models.Device, 0)
 
-	rows, err := r.db.Query("SELECT d.id, d.key, d.name, d.public_key FROM user_device as ud LEFT JOIN device as d ON ud.device_id = d.id WHERE ud.user_id = ?", user_id)
+	rows, err := r.db.Query("SELECT d.id, d.uid, d.name, d.public_key FROM user_device as ud LEFT JOIN devices as d ON ud.device_id = d.id WHERE ud.user_id = ?", user_id)
+	if err != nil {
+		return devices, err
+	}
 	for rows.Next() {
 		var device models.Device
 

@@ -14,7 +14,7 @@ func NewSecretRepository(db *sqlx.DB) *SecretRepository {
 }
 
 func (r *SecretRepository) GetSecrets(user_id int) ([]models.Secret, error) {
-	var secrets []models.Secret
+	secrets := make([]models.Secret, 0)
 
 	rows, err := r.db.Query("SELECT id, user_id, encryption FROM secrets WHERE user_id = ?", user_id)
 	for rows.Next() {

@@ -25,7 +25,7 @@ CREATE TABLE devices
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `uid` VARCHAR(255) NOT NULL UNIQUE,
-    public_key VARCHAR(255) NOT NULL,
+    public_key VARCHAR(255) NOT NULL
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
@@ -36,9 +36,9 @@ CREATE TABLE user_device
     user_id INT NOT NULL,
     device_id INT NOT NULL,
     CONSTRAINT userdevice_user_fk
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT userdevice_device_fk
-    FOREIGN KEY (device_id) REFERENCES device (id)
+    FOREIGN KEY (device_id) REFERENCES devices (id)
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
