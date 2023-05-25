@@ -1,1 +1,6 @@
 port: "8080"
+db_host: "localhost"
+db_port: "3306"
+db_username: "pm_user"
+db_password: "123ZXCzxc"
+db_name: "pm"
