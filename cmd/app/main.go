@@ -53,7 +53,7 @@ func main() {
 }
 
 func initConfig() error {
-	viper.AddConfigPath("/home/pm/configs")
+	viper.AddConfigPath("../../configs") // home/pm/configs
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()
 }
