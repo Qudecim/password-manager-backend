@@ -34,6 +34,9 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	hub := socket.NewHub()
+	go hub.Run()
+
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 
@@ -43,7 +46,7 @@ func main() {
 	router = restHandler.InitRoutes(router)
 
 	socketHandler := socket.NewHandler(services)
-	router = socketHandler.InitRoutes(router)
+	router = socketHandler.InitRoutes(hub, router)
 
 	srv := new(transport.Server)
 	if err := srv.Run(viper.GetString("port"), router); err != nil {
