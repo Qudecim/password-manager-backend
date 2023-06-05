@@ -35,28 +35,28 @@ var (
 
 type Handler struct {
 	services *service.Service
+	hub      *Hub
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(hub *Hub, services *service.Service) *Handler {
+	return &Handler{hub: hub, services: services}
 }
 
-func (h *Handler) InitRoutes(hub *Hub, router *gin.Engine) *gin.Engine {
-
-	router.GET("/ws", func(c *gin.Context) {
-		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-		if err != nil {
-			http.NotFound(c.Writer, c.Request)
-			return
-		}
-
-		client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
-		client.hub.register <- client
-
-		go client.writePump()
-		go client.readPump()
-	})
-
+func (h *Handler) InitRoutes(router *gin.Engine) *gin.Engine {
+	router.GET("/ws", h.ws)
 	return router
+}
 
+func (h *Handler) ws(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		http.NotFound(c.Writer, c.Request)
+		return
+	}
+
+	client := &Client{services: h.services, hub: h.hub, conn: conn, send: make(chan []byte, 256)}
+	client.hub.register <- client
+
+	go client.writePump()
+	go client.readPump()
 }

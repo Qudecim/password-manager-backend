@@ -45,8 +45,8 @@ func main() {
 	restHandler := rest.NewHandler(services)
 	router = restHandler.InitRoutes(router)
 
-	socketHandler := socket.NewHandler(services)
-	router = socketHandler.InitRoutes(hub, router)
+	socketHandler := socket.NewHandler(hub, services)
+	router = socketHandler.InitRoutes(router)
 
 	srv := new(transport.Server)
 	if err := srv.Run(viper.GetString("port"), router); err != nil {

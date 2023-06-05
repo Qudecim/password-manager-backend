@@ -2,11 +2,11 @@ package socket
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/qudecim/password-manager-backend/pkg/service"
 )
 
 type Client struct {
@@ -17,17 +17,8 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan []byte
-}
 
-// Обработчик для типа сообщения "type1"
-func (c *Client) handleType1Message(message []byte) {
-	// Обработка сообщения типа "type1"
-}
-
-// Обработчик для типа сообщения "type2"
-func (c *Client) handleType2Message(message []byte) {
-	// Обработка сообщения типа "type2"
-	fmt.Println(c)
+	services *service.Service
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -45,8 +36,9 @@ func (c *Client) readPump() {
 	router := NewRouter()
 
 	// Добавляем обработчики для различных типов сообщений
-	router.AddHandler("type1", c.handleType1Message)
-	router.AddHandler("type2", c.handleType2Message)
+	router.AddHandler("initialization", c.handleInitialization)
+	router.AddHandler("connect", c.handleConnect)
+	router.AddHandler("connect_confirm", c.handleConnectConfirm)
 
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -60,7 +52,10 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
+
+		router.HandleMessage(c, message)
+
+		//c.hub.broadcast <- message
 	}
 }
 

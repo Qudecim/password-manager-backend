@@ -1,6 +1,13 @@
 package socket
 
-import "log"
+import (
+	"encoding/json"
+	"log"
+)
+
+type defaultMessage struct {
+	event string
+}
 
 type MessageHandler func(message []byte)
 
@@ -19,11 +26,15 @@ func (r *Router) AddHandler(messageType string, handler MessageHandler) {
 }
 
 func (r *Router) HandleMessage(c *Client, message []byte) {
-	// Извлекаем тип сообщения
-	messageType := string(message)
+
+	var msg defaultMessage
+	err := json.Unmarshal(message, &msg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Получаем соответствующий обработчик
-	handler, ok := r.handlers[messageType]
+	handler, ok := r.handlers[msg.event]
 	if !ok {
 		// Если нет обработчика для данного типа сообщения, можно выполнить обработку по умолчанию
 		handler = r.defaultHandler
