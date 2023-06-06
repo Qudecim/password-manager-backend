@@ -20,15 +20,20 @@ type Secret interface {
 }
 
 type UserDevice interface {
-	Get(user_id int) ([]models.Device, error)
-	Add(user_id int, device string) (*models.Device, error)
-	Delete(user_id int, device_id int) error
+	GetUserDevice(user_id int) ([]models.Device, error)
+	AddUserDevice(user_id int, device string) (*models.Device, error)
+	DeleteUserDevice(user_id int, device_id int) error
+}
+
+type Device interface {
+	CreateDevice(models.Device) (models.Device, error)
 }
 
 type Service struct {
 	Authorization
 	Secret
 	UserDevice
+	Device
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -36,5 +41,6 @@ func NewService(repos *repository.Repository) *Service {
 		Authorization: NewAuthService(repos.Authorization),
 		Secret:        NewSecretService(repos.Secret),
 		UserDevice:    NewUserDeviceService(repos.UserDevice, repos.Device),
+		Device:        NewDeviceService(repos.UserDevice, repos.Device),
 	}
 }

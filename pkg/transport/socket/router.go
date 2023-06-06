@@ -6,7 +6,7 @@ import (
 )
 
 type defaultMessage struct {
-	event string
+	Event string `json:"event"`
 }
 
 type MessageHandler func(message []byte)
@@ -34,9 +34,8 @@ func (r *Router) HandleMessage(c *Client, message []byte) {
 	}
 
 	// Получаем соответствующий обработчик
-	handler, ok := r.handlers[msg.event]
+	handler, ok := r.handlers[msg.Event]
 	if !ok {
-		// Если нет обработчика для данного типа сообщения, можно выполнить обработку по умолчанию
 		handler = r.defaultHandler
 	}
 

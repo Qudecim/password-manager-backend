@@ -49,6 +49,7 @@ require (
 require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible // indirect
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/jmoiron/sqlx v1.3.5
 )

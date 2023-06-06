@@ -21,3 +21,17 @@ func (r *DeviceRepository) GetByUid(device_uid string) (models.Device, error) {
 
 	return device, err
 }
+
+func (r *DeviceRepository) CreateDevice(device models.Device) (int, error) {
+	result, err := r.db.NamedExec("INSERT INTO devices (uid, name, public_key) values (:uid, :name, :public_key)", device)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}
