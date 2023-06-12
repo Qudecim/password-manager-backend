@@ -14,11 +14,11 @@ func NewUserDeviceService(repo repository.UserDevice, repoDevice repository.Devi
 	return &UserDeviceService{repo: repo, repoDevice: repoDevice}
 }
 
-func (s *UserDeviceService) Get(user_id int) ([]models.Device, error) {
+func (s *UserDeviceService) GetUserDevice(user_id int) ([]models.Device, error) {
 	return s.repo.Get(user_id)
 }
 
-func (s *UserDeviceService) Add(user_id int, device_uid string) (*models.Device, error) {
+func (s *UserDeviceService) AddUserDevice(user_id int, device_uid string) (*models.Device, error) {
 
 	device, err := s.repoDevice.GetByUid(device_uid)
 	if err != nil {
@@ -33,6 +33,6 @@ func (s *UserDeviceService) Add(user_id int, device_uid string) (*models.Device,
 	return &device, nil
 }
 
-func (s *UserDeviceService) Delete(user_id int, device_id int) error {
+func (s *UserDeviceService) DeleteUserDevice(user_id int, device_id int) error {
 	return s.repo.Delete(user_id, device_id)
 }

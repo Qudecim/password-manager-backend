@@ -34,6 +34,9 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	hub := socket.NewHub()
+	go hub.Run()
+
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 
@@ -42,7 +45,7 @@ func main() {
 	restHandler := rest.NewHandler(services)
 	router = restHandler.InitRoutes(router)
 
-	socketHandler := socket.NewHandler(services)
+	socketHandler := socket.NewHandler(hub, services)
 	router = socketHandler.InitRoutes(router)
 
 	srv := new(transport.Server)

@@ -26,6 +26,7 @@ type UserDevice interface {
 
 type Device interface {
 	GetByUid(device_key string) (models.Device, error)
+	CreateDevice(device models.Device) (int, error)
 }
 
 type Repository struct {

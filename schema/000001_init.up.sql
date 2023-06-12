@@ -43,3 +43,15 @@ CREATE TABLE user_device
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE device_confirmations
+(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    device_id INT NOT NULL,
+    confirmation VARCHAR(255) NOT NULL,
+    CONSTRAINT device_confirm_device_fk
+    FOREIGN KEY (device_id) REFERENCES devices (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_general_ci;
