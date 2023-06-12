@@ -28,3 +28,13 @@ func (s *DeviceService) CreateDevice(device models.Device) (models.Device, error
 
 	return device, nil
 }
+
+func (s *DeviceService) ConnectDevice(uid string) (models.Device, error) {
+
+	device, err := s.repoDevice.GetByUid(uid)
+	if err != nil {
+		return device, err
+	}
+
+	return device, nil
+}

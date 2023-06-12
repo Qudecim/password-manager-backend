@@ -98,3 +98,27 @@ func (h *Handler) deleteSecret(c *gin.Context) {
 		"success": true,
 	})
 }
+
+type secretSending struct {
+	Uid    string `json:"uid" binding:"required"`
+	Secret string `json:"secret" binding:"required"`
+}
+
+func (h *Handler) sendSecret(c *gin.Context) {
+	var secret secretSending
+
+	if err := c.BindJSON(&secret); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err := h.services.Sending.SendSecret(secret.Uid, secret.Secret)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"success": true,
+	})
+}

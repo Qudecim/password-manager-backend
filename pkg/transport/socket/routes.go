@@ -29,9 +29,16 @@ func (c *Client) handleInitialization(message []byte) {
 }
 
 func (c *Client) handleConnect(message []byte) {
-	// Обработка сообщения типа "type1"
-}
+	var obj deviceMessage
+	err := json.Unmarshal(message, &obj)
+	if err != nil {
+		logrus.Error(err)
+	}
 
-func (c *Client) handleConnectConfirm(message []byte) {
-	// Обработка сообщения типа "type1"
+	device, err := c.services.ConnectDevice(obj.Device.Uid)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	c.device = &device
 }

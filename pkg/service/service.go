@@ -27,6 +27,11 @@ type UserDevice interface {
 
 type Device interface {
 	CreateDevice(models.Device) (models.Device, error)
+	ConnectDevice(uid string) (models.Device, error)
+}
+
+type Sending interface {
+	SendSecret(uid string, secret string) error
 }
 
 type Service struct {
@@ -34,6 +39,7 @@ type Service struct {
 	Secret
 	UserDevice
 	Device
+	Sending
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -42,5 +48,6 @@ func NewService(repos *repository.Repository) *Service {
 		Secret:        NewSecretService(repos.Secret),
 		UserDevice:    NewUserDeviceService(repos.UserDevice, repos.Device),
 		Device:        NewDeviceService(repos.UserDevice, repos.Device),
+		Sending:       NewSendingService(),
 	}
 }

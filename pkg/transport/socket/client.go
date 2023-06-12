@@ -6,19 +6,20 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/qudecim/password-manager-backend/pkg/models"
 	"github.com/qudecim/password-manager-backend/pkg/service"
 )
 
 type Client struct {
 	hub *Hub
 
-	// The websocket connection.
 	conn *websocket.Conn
 
-	// Buffered channel of outbound messages.
 	send chan []byte
 
 	services *service.Service
+
+	device *models.Device
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -38,7 +39,6 @@ func (c *Client) readPump() {
 	// Добавляем обработчики для различных типов сообщений
 	router.AddHandler("initialization", c.handleInitialization)
 	router.AddHandler("connect", c.handleConnect)
-	router.AddHandler("connect_confirm", c.handleConnectConfirm)
 
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
